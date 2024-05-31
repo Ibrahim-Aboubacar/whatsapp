@@ -10,7 +10,7 @@
   <script type="module" src="/main.js"></script>
 </head>
 
-<body class="h-screen bg-gray-100 dark:bg-gray-950" x-data="{currentPage:'disc'}">
+<body class="h-screen bg-gray-100 dark:bg-gray-950" x-data="{currentPage:'disc', currentFilter:'all'}">
   <div class="bg-white dark:bg-gray-900 h-screen flex flex-col text-gray-900 dark:text-gray-50 mx-auto max-w-md"
     id="app">
     <!-- head  -->
@@ -56,16 +56,19 @@
       </div>
       <!-- Filter barre -->
       <div class="text-sm flex gap-2 p-2">
-        <span
-          class="px-3 py-1 bg-green-100 dark:bg-green-900 rounded-full font-semibold text-green-700 dark:text-green-500 cursor-pointer">
+        <span @click="currentFilter = 'all'"
+          :class="currentFilter == 'all' ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'"
+          class="px-3 py-1 rounded-full font-semibold  cursor-pointer">
           Toutes
         </span>
-        <span
-          class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full font-semibold text-gray-600 dark:text-gray-400 cursor-pointer">
+        <span @click="currentFilter = 'no-read'"
+          :class="currentFilter == 'no-read' ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'"
+          class="px-3 py-1 rounded-full font-semibold cursor-pointer">
           Non lues
         </span>
-        <span
-          class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full font-semibold text-gray-600 dark:text-gray-400 cursor-pointer">
+        <span @click="currentFilter = 'groups'"
+          :class="currentFilter == 'groups' ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'"
+          class="px-3 py-1 rounded-full font-semibold cursor-pointer">
           Groupes
         </span>
       </div>
@@ -82,143 +85,734 @@
       </div>
     </header>
     <!-- Page Countent -->
-    <main class="flex-grow bg-gray-50_ dark:bg-gray-900_">
+    <main class="flex-grow bg-gray-50_ dark:bg-gray-900_ overflow-y-auto">
       <!-- Discussions -->
       <div x-show="currentPage == 'disc'" class="flex flex-col h-full">
-        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
-          <div class="flex gap-2">
-            <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
-              class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
-              <img src="https://avatars.githubusercontent.com/u/103621495?v=4"
-                class="min-w-full min-h-full rounded-full object-cover">
-            </div>
-            <div class="flex-grow flex flex-col justify-between">
-              <!-- Name and LastSeen -->
-              <div class="flex gap-1 justify-between items-center dark:text-gray-100">
-                <h4 class="text-lg font-semibold">Le Ciskolateur</h4>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+        <!-- group -->
+        <div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://avatars.githubusercontent.com/u/103621495?v=4"
+                  class="min-w-full min-h-full rounded-full object-cover">
               </div>
-              <!-- Message preview -->
-              <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
-                <!-- accuser de reception -->
-                <div class="relative flex w-4 h-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="absolute top-0 size-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="absolute top-0 left-1 size-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Le Ciskolateur</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
                 </div>
-                <!-- Last Message -->
-                <div class="flex-grow ml-4 text-sm">
-                  <p class="line-clamp-1">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Asperiores doloribus
-                    quae, esse quis
-                    velit, impedit rem dicta minus omnis repudiandae excepturi tenetur voluptatem maxime placeat quasi
-                    voluptatibus. Non, dicta voluptates.
-                  </p>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-4 text-sm">
+                    <p class="line-clamp-1">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Asperiores
+                      doloribus
+                      quae, esse quis
+                      velit, impedit rem dicta minus omnis repudiandae excepturi tenetur voluptatem maxime placeat quasi
+                      voluptatibus. Non, dicta voluptates.
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
                 </div>
-                <!-- Chevron -->
-                <div class="flex w-4 h-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                    class="size-4 rotate-90">
-                    <path
-                      d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
-                  </svg>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:!true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img
+                  src="https://nature-and-garden.com/cdn-cgi/image/width=1200,height=885,fit=crop,quality=80,format=auto,onerror=redirect,metadata=none/wp-content/uploads/sites/4/2018/08/violet.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Aicha Callable 2.0</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      Je t'ai envoye 100.000 Fr
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://c1.wallpaperflare.com/preview/728/827/612/abstract-clock-dark-indoors.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Jano Callable</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">02:18</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      T'as recu le visa ?
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:!true}">
-          <div class="flex gap-2">
-            <!-- Profile Picture -->
-            <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
-              class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
-              <img
-                src="https://nature-and-garden.com/cdn-cgi/image/width=1200,height=885,fit=crop,quality=80,format=auto,onerror=redirect,metadata=none/wp-content/uploads/sites/4/2018/08/violet.jpg"
-                class="min-w-full min-h-full rounded-full object-cover">
-            </div>
-
-            <div class="flex-grow flex flex-col justify-between">
-              <!-- Name and LastSeen -->
-              <div class="flex gap-1 justify-between items-center dark:text-gray-100">
-                <h4 class="text-lg font-semibold">Aicha Callable 2.0</h4>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+        <!-- group -->
+        <div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:!true}">
+            <div class="flex gap-2">
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://avatars.githubusercontent.com/u/103621495?v=4"
+                  class="min-w-full min-h-full rounded-full object-cover">
               </div>
-              <!-- Message preview -->
-              <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
-                <!-- accuser de reception -->
-                <div class="relative flex w-4 h-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="absolute top-0 size-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="absolute top-0 left-1 size-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Le Ciskolateur Prime</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
                 </div>
-                <!-- Last Message -->
-                <div class="flex-grow ml-1 text-sm">
-                  <p class="line-clamp-1">
-                    Je t'ai envoye 100.000 Fr
-                  </p>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-4 text-sm">
+                    <p class="line-clamp-1">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Asperiores
+                      doloribus
+                      quae, esse quis
+                      velit, impedit rem dicta minus omnis repudiandae excepturi tenetur voluptatem maxime placeat quasi
+                      voluptatibus. Non, dicta voluptates.
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
                 </div>
-                <!-- Chevron -->
-                <div class="flex w-4 h-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                    class="size-4 rotate-90">
-                    <path
-                      d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
-                  </svg>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:!true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img
+                  src="https://nature-and-garden.com/cdn-cgi/image/width=1200,height=885,fit=crop,quality=80,format=auto,onerror=redirect,metadata=none/wp-content/uploads/sites/4/2018/08/violet.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Aicha Callable 2.0</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      Je t'ai envoye 100.000 Fr
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://c1.wallpaperflare.com/preview/728/827/612/abstract-clock-dark-indoors.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Jano Callable</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">02:18</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      T'as recu le visa ?
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
-          <div class="flex gap-2">
-            <!-- Profile Picture -->
-            <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
-              class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
-              <img src="https://c1.wallpaperflare.com/preview/728/827/612/abstract-clock-dark-indoors.jpg"
-                class="min-w-full min-h-full rounded-full object-cover">
-            </div>
-
-            <div class="flex-grow flex flex-col justify-between">
-              <!-- Name and LastSeen -->
-              <div class="flex gap-1 justify-between items-center dark:text-gray-100">
-                <h4 class="text-lg font-semibold">Jano Callable</h4>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">02:18</span>
+        <!-- group -->
+        <div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://avatars.githubusercontent.com/u/103621495?v=4"
+                  class="min-w-full min-h-full rounded-full object-cover">
               </div>
-              <!-- Message preview -->
-              <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
-                <!-- accuser de reception -->
-                <div class="relative flex w-4 h-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="absolute top-0 size-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="absolute top-0 left-1 size-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Le Ciskolateur</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
                 </div>
-                <!-- Last Message -->
-                <div class="flex-grow ml-1 text-sm">
-                  <p class="line-clamp-1">
-                    T'as recu le visa ?
-                  </p>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-4 text-sm">
+                    <p class="line-clamp-1">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Asperiores
+                      doloribus
+                      quae, esse quis
+                      velit, impedit rem dicta minus omnis repudiandae excepturi tenetur voluptatem maxime placeat quasi
+                      voluptatibus. Non, dicta voluptates.
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
                 </div>
-                <!-- Chevron -->
-                <div class="flex w-4 h-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                    class="size-4 rotate-90">
-                    <path
-                      d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
-                  </svg>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:!true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img
+                  src="https://nature-and-garden.com/cdn-cgi/image/width=1200,height=885,fit=crop,quality=80,format=auto,onerror=redirect,metadata=none/wp-content/uploads/sites/4/2018/08/violet.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Aicha Callable 2.0</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      Je t'ai envoye 100.000 Fr
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://c1.wallpaperflare.com/preview/728/827/612/abstract-clock-dark-indoors.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Jano Callable</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">02:18</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      T'as recu le visa ?
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- group -->
+        <div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://avatars.githubusercontent.com/u/103621495?v=4"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Le Ciskolateur</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-4 text-sm">
+                    <p class="line-clamp-1">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Asperiores
+                      doloribus
+                      quae, esse quis
+                      velit, impedit rem dicta minus omnis repudiandae excepturi tenetur voluptatem maxime placeat quasi
+                      voluptatibus. Non, dicta voluptates.
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:!true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img
+                  src="https://nature-and-garden.com/cdn-cgi/image/width=1200,height=885,fit=crop,quality=80,format=auto,onerror=redirect,metadata=none/wp-content/uploads/sites/4/2018/08/violet.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Aicha Callable 2.0</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      Je t'ai envoye 100.000 Fr
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://c1.wallpaperflare.com/preview/728/827/612/abstract-clock-dark-indoors.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Jano Callable</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">02:18</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      T'as recu le visa ?
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- group -->
+        <div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://avatars.githubusercontent.com/u/103621495?v=4"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Le Ciskolateur</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-4 text-sm">
+                    <p class="line-clamp-1">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Asperiores
+                      doloribus
+                      quae, esse quis
+                      velit, impedit rem dicta minus omnis repudiandae excepturi tenetur voluptatem maxime placeat quasi
+                      voluptatibus. Non, dicta voluptates.
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:!true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img
+                  src="https://nature-and-garden.com/cdn-cgi/image/width=1200,height=885,fit=crop,quality=80,format=auto,onerror=redirect,metadata=none/wp-content/uploads/sites/4/2018/08/violet.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Aicha Callable 2.0</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hier</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      Je t'ai envoye 100.000 Fr
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Une discusion -->
+          <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 cursor-pointer" x-data="{hasStatuts:true}">
+            <div class="flex gap-2">
+              <!-- Profile Picture -->
+              <div :class="hasStatuts ? 'border-green-500' : 'border-transparent'"
+                class="w-12 h-12 flex-shrink-0 border-2 rounded-full overflow-hidden p-[2px]">
+                <img src="https://c1.wallpaperflare.com/preview/728/827/612/abstract-clock-dark-indoors.jpg"
+                  class="min-w-full min-h-full rounded-full object-cover">
+              </div>
+
+              <div class="flex-grow flex flex-col justify-between">
+                <!-- Name and LastSeen -->
+                <div class="flex gap-1 justify-between items-center dark:text-gray-100">
+                  <h4 class="text-lg font-semibold">Jano Callable</h4>
+                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400">02:18</span>
+                </div>
+                <!-- Message preview -->
+                <div class="flex gap-1 items-center text-gray-500 dark:text-gray-400">
+                  <!-- accuser de reception -->
+                  <div class="relative flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" class="absolute top-0 left-1 size-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <!-- Last Message -->
+                  <div class="flex-grow ml-1 text-sm">
+                    <p class="line-clamp-1">
+                      T'as recu le visa ?
+                    </p>
+                  </div>
+                  <!-- Chevron -->
+                  <div class="flex w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                      class="size-4 rotate-90">
+                      <path
+                        d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
